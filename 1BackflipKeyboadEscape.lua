@@ -271,9 +271,8 @@ TabCatalog:Select()
 -- ======================================================================
 -- STATE
 -- ======================================================================
-local autoWinsMapBaruActive = false
-local autoRebirthMapBaruActive = false
-
+local autoFarmMoonBlockActive = false
+local farmSavedPosition = nil
 
 local infJumpActive       = false
 local infStaminaActive    = false
@@ -396,22 +395,22 @@ CatCredits:Paragraph({ Title = "Credits", Desc = HUB_CREDITS })
 -- ======================================================================
 -- 2. MAIN FEATURES
 -- ======================================================================
-local MainMapBaru = TabMain:Section({ Title = "Auto Wins", Icon = "trophy", Opened = true })
+local MainAutoFram = TabMain:Section({ Title = "Auto Fram", Icon = "zap", Opened = true })
 
-MainMapBaru:Toggle({
-    Title = "Auto Wins",
-    Desc  = "Otomatis Wins",
-    Icon  = "zap",
+-- Tambahkan ke dalam Section/Tab Main Features UI Anda
+MainAutoFram:Toggle({
+    Title = "Auto Farm Moon Lucky Block",
+    Desc = "TP ke Moon Lucky Block, ambil otomatis, lalu kembali",
     Value = false,
-    Callback = function(state) autoWinsMapBaruActive = state end
-})
-
-MainMapBaru:Toggle({
-    Title = "Auto Rebirth ",
-    Desc  = "Otomatis melakukan rebirth",
-    Icon  = "rotate-ccw",
-    Value = false,
-    Callback = function(state) autoRebirthMapBaruActive = state end
+    Callback = function(state)
+        autoFarmMoonBlockActive = state
+        if state then
+            local root = GetRoot() -- Sesuaikan dengan fungsi get root character script Anda
+            if root then
+                farmSavedPosition = root.CFrame
+            end
+        end
+    end
 })
 
 -- ======================================================================
@@ -1367,39 +1366,61 @@ end)
 -- BACKGROUND : MAIN FEATURES AUTOMATION
 -- ======================================================================
 
--- Auto Wins Map Baru (Stage11EndWin)
 task.spawn(function()
     while true do
-        if autoWinsMapBaruActive then
+        if autoFarmMoonBlockActive then
             pcall(function()
-                local root = GetRoot()
-                local targetPart = Workspace:FindFirstChild("WinsClaimContainer") 
-                    and Workspace.WinsClaimContainer:FindFirstChild("Stage11EndWin")
+                -- Menggunakan fungsi GetRoot bawaan script utama Anda, atau helper standar
+                local char = game:GetService("Players").LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if not root then return end
                 
-                if root and targetPart then
-                    root.CFrame = targetPart.CFrame
+                if not farmSavedPosition then
+                    farmSavedPosition = root.CFrame
+                end
+                
+                -- Cari Moon Lucky Block di dalam workspace.Live.Slimes
+                local targetBlock = nil
+                local slimesFolder = workspace:FindFirstChild("Live") and workspace.Live:FindFirstChild("Slimes")
+                if slimesFolder then
+                    for _, obj in ipairs(slimesFolder:GetChildren()) do
+                        if obj.Name == "Moon Lucky Block" then
+                            targetBlock = obj
+                            break
+                        end
+                    end
+                end
+                
+                if targetBlock then
+                    local rootPart = targetBlock:FindFirstChild("RootPart")
+                    local prompt = rootPart and rootPart:FindFirstChild("StealPrompt")
+                    
+                    if rootPart then
+                        -- 1. TP tepat di atas/dekat Moon Lucky Block
+                        root.CFrame = rootPart.CFrame + Vector3.new(0, 2, 0)
+                        
+                        -- 2. Eksekusi instan ProximityPrompt
+                        if prompt and prompt:IsA("ProximityPrompt") then
+                            prompt.MaxActivationDistance = 9e9
+                            prompt.HoldDuration = 0
+                            
+                            for _ = 1, 3 do
+                                fireproximityprompt(prompt)
+                                task.wait(0.05)
+                            end
+                        end
+                        
+                        task.wait(0.2)
+                        
+                        -- 3. TP kembali ke posisi awal
+                        if farmSavedPosition then
+                            root.CFrame = farmSavedPosition
+                        end
+                    end
                 end
             end)
         end
-        task.wait(0.05) -- Kecepatan teleport tinggi
-    end
-end)
-
--- Auto Rebirth Map Baru (Net Remote)
-task.spawn(function()
-    while true do
-        if autoRebirthMapBaruActive then
-            pcall(function()
-                game:GetService("ReplicatedStorage")
-                    :WaitForChild("Packages")
-                    :WaitForChild("_Index")
-                    :WaitForChild("sleitnick_net@0.2.0")
-                    :WaitForChild("net")
-                    :WaitForChild("RE/Rebirth/Request")
-                    :FireServer()
-            end)
-        end
-        task.wait(0.5) -- Jeda antar request rebirth
+        task.wait(0.5)
     end
 end)
 
