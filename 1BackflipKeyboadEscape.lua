@@ -271,8 +271,8 @@ TabCatalog:Select()
 -- ======================================================================
 -- STATE
 -- ======================================================================
-local autoWinsWorld1Active = false
-local autoWinsWorld2Active = false
+local autoWinsMapBaruActive = false
+local autoRebirthMapBaruActive = false
 
 
 local infJumpActive       = false
@@ -396,22 +396,22 @@ CatCredits:Paragraph({ Title = "Credits", Desc = HUB_CREDITS })
 -- ======================================================================
 -- 2. MAIN FEATURES
 -- ======================================================================
-local MainWins = TabMain:Section({ Title = "Auto Wins Automation", Icon = "trophy", Opened = true })
+local MainMapBaru = TabMain:Section({ Title = "Auto Wins", Icon = "trophy", Opened = true })
 
-MainWins:Toggle({
-    Title = "Auto Wins World 1",
-    Desc  = "Teleport terus menerus ke World 1 Stage 20 dengan cepat",
+MainMapBaru:Toggle({
+    Title = "Auto Wins",
+    Desc  = "Otomatis Wins",
     Icon  = "zap",
     Value = false,
-    Callback = function(state) autoWinsWorld1Active = state end
+    Callback = function(state) autoWinsMapBaruActive = state end
 })
 
-MainWins:Toggle({
-    Title = "Auto Wins World 2",
-    Desc  = "Teleport terus menerus ke World 2 Stage 10 dengan cepat",
-    Icon  = "zap",
+MainMapBaru:Toggle({
+    Title = "Auto Rebirth ",
+    Desc  = "Otomatis melakukan rebirth",
+    Icon  = "rotate-ccw",
     Value = false,
-    Callback = function(state) autoWinsWorld2Active = state end
+    Callback = function(state) autoRebirthMapBaruActive = state end
 })
 
 -- ======================================================================
@@ -1367,48 +1367,41 @@ end)
 -- BACKGROUND : MAIN FEATURES AUTOMATION
 -- ======================================================================
 
--- Auto Wins World 1 (Stage 20 Part)
+-- Auto Wins Map Baru (Stage11EndWin)
 task.spawn(function()
     while true do
-        if autoWinsWorld1Active then
+        if autoWinsMapBaruActive then
             pcall(function()
                 local root = GetRoot()
-                local targetPart = Workspace:FindFirstChild("Worlds") 
-                    and Workspace.Worlds:FindFirstChild("World1") 
-                    and Workspace.Worlds.World1:FindFirstChild("GiveWins") 
-                    and Workspace.Worlds.World1.GiveWins:FindFirstChild("Stage20") 
-                    and Workspace.Worlds.World1.GiveWins.Stage20:FindFirstChild("Part")
+                local targetPart = Workspace:FindFirstChild("WinsClaimContainer") 
+                    and Workspace.WinsClaimContainer:FindFirstChild("Stage11EndWin")
                 
                 if root and targetPart then
                     root.CFrame = targetPart.CFrame
                 end
             end)
         end
-        task.wait(0.05)
+        task.wait(0.05) -- Kecepatan teleport tinggi
     end
 end)
 
--- Auto Wins World 2 (Stage 10 Part)
+-- Auto Rebirth Map Baru (Net Remote)
 task.spawn(function()
     while true do
-        if autoWinsWorld2Active then
+        if autoRebirthMapBaruActive then
             pcall(function()
-                local root = GetRoot()
-                local targetPart = Workspace:FindFirstChild("Worlds") 
-                    and Workspace.Worlds:FindFirstChild("World2") 
-                    and Workspace.Worlds.World2:FindFirstChild("GiveWins") 
-                    and Workspace.Worlds.World2.GiveWins:FindFirstChild("Stage10") 
-                    and Workspace.Worlds.World2.GiveWins.Stage10:FindFirstChild("Part")
-                
-                if root and targetPart then
-                    root.CFrame = targetPart.CFrame
-                end
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("Packages")
+                    :WaitForChild("_Index")
+                    :WaitForChild("sleitnick_net@0.2.0")
+                    :WaitForChild("net")
+                    :WaitForChild("RE/Rebirth/Request")
+                    :FireServer()
             end)
         end
-        task.wait(0.05)
+        task.wait(0.5) -- Jeda antar request rebirth
     end
 end)
-
 
 -- ======================================================================
 -- LOADED
