@@ -1335,10 +1335,10 @@ local ThemeExtra = TabThemes:Section({ Title = "Window Settings", Icon = "settin
 
 ThemeExtra:Input({
     Title       = "UI Scale",
-    Desc        = "Masukkan angka 0.5 - 1.5 (contoh: 1.0 = normal)",
+    Desc        = "Masukkan angka 0.5 - 1.5 (contoh: 0.6)",
     Icon        = "scaling",
-    Placeholder = "1.0",
-    Value       = "1.0",
+    Placeholder = "0.6",
+    Value       = "0.6",
     Callback = function(text)
         local scale = tonumber(text)
         if not scale then
