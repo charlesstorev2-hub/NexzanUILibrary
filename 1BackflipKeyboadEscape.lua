@@ -271,13 +271,9 @@ TabCatalog:Select()
 -- ======================================================================
 -- STATE
 -- ======================================================================
-local autoRollActive     = false
-local autoBuyActive      = false
-local autoSellActive     = false
-local autoUpgradeActive  = false
-local autoRebirthActive  = false
-local autoBuyFloorActive = false
-local selectedUpgrades   = {}
+local autoWinsWorld1Active = false
+local autoWinsWorld2Active = false
+
 
 local infJumpActive       = false
 local infStaminaActive    = false
@@ -400,79 +396,25 @@ CatCredits:Paragraph({ Title = "Credits", Desc = HUB_CREDITS })
 -- ======================================================================
 -- 2. MAIN FEATURES
 -- ======================================================================
-local MainGacha = TabMain:Section({ Title = "Gacha Automation", Icon = "dices", Opened = true })
+local MainWins = TabMain:Section({ Title = "Auto Wins Automation", Icon = "trophy", Opened = true })
 
-MainGacha:Toggle({
-    Title = "Auto Roll",
-    Desc  = "Otomatis melakukan roll karakter",
-    Icon  = "refresh-cw",
+MainWins:Toggle({
+    Title = "Auto Wins World 1",
+    Desc  = "Teleport terus menerus ke World 1 Stage 20 dengan cepat",
+    Icon  = "zap",
     Value = false,
-    Callback = function(state) autoRollActive = state end
+    Callback = function(state) autoWinsWorld1Active = state end
 })
 
-MainGacha:Toggle({
-    Title = "Auto Buy",
-    Desc  = "Otomatis claim / buy hasil roll",
-    Icon  = "shopping-cart",
+MainWins:Toggle({
+    Title = "Auto Wins World 2",
+    Desc  = "Teleport terus menerus ke World 2 Stage 10 dengan cepat",
+    Icon  = "zap",
     Value = false,
-    Callback = function(state) autoBuyActive = state end
+    Callback = function(state) autoWinsWorld2Active = state end
 })
 
 TabMain:Divider()
-
-local MainFarm = TabMain:Section({ Title = "Farm, Sell & Floor Automation", Icon = "coins", Opened = true })
-
-MainFarm:Toggle({
-    Title = "Auto Sell All",
-    Desc  = "Otomatis menjual semua item",
-    Icon  = "banknote",
-    Value = false,
-    Callback = function(state) autoSellActive = state end
-})
-
-MainFarm:Toggle({
-    Title = "Auto Buy Floor",
-    Desc  = "Otomatis membeli lantai (floor)",
-    Icon  = "layers",
-    Value = false,
-    Callback = function(state) autoBuyFloorActive = state end
-})
-
-MainFarm:Toggle({
-    Title = "Auto Rebirth",
-    Desc  = "Otomatis rebirth tier 1 sampai 8",
-    Icon  = "rotate-ccw",
-    Value = false,
-    Callback = function(state) autoRebirthActive = state end
-})
-
-TabMain:Divider()
-
-local MainUpg = TabMain:Section({ Title = "Upgrade Automation", Icon = "trending-up", Opened = true })
-
-MainUpg:Dropdown({
-    Title  = "Pilih Jenis Upgrade",
-    Desc   = "Pilih beberapa upgrade yang ingin dibeli sekaligus",
-    Values = { "cashmult", "multirebirth", "gemrate", "luck", "autoroll", "rollspeed", "rollspeed2", "multiroll" },
-    Multi     = true,
-    AllowNone = true,
-    Value     = {},
-    Callback  = function(selected) selectedUpgrades = selected end
-})
-
-MainUpg:Toggle({
-    Title = "Auto Upgrade",
-    Desc  = "Otomatis membeli upgrade yang dicentang di dropdown",
-    Icon  = "arrow-big-up-dash",
-    Value = false,
-    Callback = function(state) autoUpgradeActive = state end
-})
-
-TabMain:Divider()
-TabMain:Paragraph({
-    Title = "Info",
-    Desc  = "Semua automation berjalan di background. Matikan toggle untuk menghentikan loop."
-})
 
 -- ======================================================================
 -- 3. PLAYER FEATURES
@@ -1427,80 +1369,43 @@ end)
 -- BACKGROUND : MAIN FEATURES AUTOMATION
 -- ======================================================================
 
--- Auto Roll & Auto Buy
+-- Auto Wins World 1 (Stage 20)
 task.spawn(function()
     while true do
-        if autoRollActive then
+        if autoWinsWorld1Active then
             pcall(function()
-                local ok, result = pcall(function()
-                    return ReplicatedStorage.Remotes.RollCharacters:InvokeServer(rollPlatformUI)
-                end)
-                if ok and result and autoBuyActive then
-                    pcall(function()
-                        ReplicatedStorage.Remotes.ClaimRoll:InvokeServer(1)
-                    end)
+                local root = GetRoot()
+                local targetPart = Workspace:FindFirstChild("Worlds") 
+                    and Workspace.Worlds:FindFirstChild("World1") 
+                    and Workspace.Worlds.World1:FindFirstChild("GiveWins") 
+                    and Workspace.Worlds.World1.GiveWins:FindFirstChild("Stage20")
+                
+                if root and targetPart then
+                    root.CFrame = targetPart.CFrame
                 end
             end)
         end
-        task.wait(0.5)
+        task.wait(0.05) -- Kecepatan teleport tinggi (dapat disesuaikan jika ingin diperlambat)
     end
 end)
 
--- Auto Sell All
+-- Auto Wins World 2 (Stage 10)
 task.spawn(function()
     while true do
-        if autoSellActive then
+        if autoWinsWorld2Active then
             pcall(function()
-                ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("SellAll"):InvokeServer()
-            end)
-        end
-        task.wait(1)
-    end
-end)
-
--- Auto Buy Floor
-task.spawn(function()
-    while true do
-        if autoBuyFloorActive then
-            pcall(function()
-                ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("BuyFloor"):InvokeServer()
-            end)
-        end
-        task.wait(1)
-    end
-end)
-
--- Auto Rebirth
-task.spawn(function()
-    while true do
-        if autoRebirthActive then
-            for i = 1, 8 do
-                if not autoRebirthActive then break end
-                pcall(function()
-                    ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("DoRebirth"):InvokeServer(i)
-                end)
-                task.wait(0.5)
-            end
-        end
-        task.wait(0.5)
-    end
-end)
-
--- Auto Upgrade
-task.spawn(function()
-    while true do
-        if autoUpgradeActive and selectedUpgrades then
-            pcall(function()
-                for _, upgradeName in pairs(selectedUpgrades) do
-                    if not autoUpgradeActive then break end
-                    pcall(function()
-                        ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("BuyUpgrade"):InvokeServer(upgradeName)
-                    end)
-                    task.wait(0.1)
+                local root = GetRoot()
+                local targetPart = Workspace:FindFirstChild("Worlds") 
+                    and Workspace.Worlds:FindFirstChild("World2") 
+                    and Workspace.Worlds.World2:FindFirstChild("GiveWins") 
+                    and Workspace.Worlds.World2.GiveWins:FindFirstChild("Stage10")
+                
+                if root and targetPart then
+                    root.CFrame = targetPart.CFrame
                 end
             end)
         end
-        task.wait(0.5)
+        task.wait(0.05) -- Kecepatan teleport tinggi (dapat disesuaikan jika ingin diperlambat)
     end
 end)
 
