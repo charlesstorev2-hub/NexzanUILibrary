@@ -414,8 +414,6 @@ MainWins:Toggle({
     Callback = function(state) autoWinsWorld2Active = state end
 })
 
-TabMain:Divider()
-
 -- ======================================================================
 -- 3. PLAYER FEATURES
 -- ======================================================================
@@ -1369,7 +1367,7 @@ end)
 -- BACKGROUND : MAIN FEATURES AUTOMATION
 -- ======================================================================
 
--- Auto Wins World 1 (Stage 20)
+-- Auto Wins World 1 (Stage 20 Part)
 task.spawn(function()
     while true do
         if autoWinsWorld1Active then
@@ -1378,18 +1376,19 @@ task.spawn(function()
                 local targetPart = Workspace:FindFirstChild("Worlds") 
                     and Workspace.Worlds:FindFirstChild("World1") 
                     and Workspace.Worlds.World1:FindFirstChild("GiveWins") 
-                    and Workspace.Worlds.World1.GiveWins:FindFirstChild("Stage20")
+                    and Workspace.Worlds.World1.GiveWins:FindFirstChild("Stage20") 
+                    and Workspace.Worlds.World1.GiveWins.Stage20:FindFirstChild("Part")
                 
                 if root and targetPart then
                     root.CFrame = targetPart.CFrame
                 end
             end)
         end
-        task.wait(0.05) -- Kecepatan teleport tinggi (dapat disesuaikan jika ingin diperlambat)
+        task.wait(0.05)
     end
 end)
 
--- Auto Wins World 2 (Stage 10)
+-- Auto Wins World 2 (Stage 10 Part)
 task.spawn(function()
     while true do
         if autoWinsWorld2Active then
@@ -1398,16 +1397,18 @@ task.spawn(function()
                 local targetPart = Workspace:FindFirstChild("Worlds") 
                     and Workspace.Worlds:FindFirstChild("World2") 
                     and Workspace.Worlds.World2:FindFirstChild("GiveWins") 
-                    and Workspace.Worlds.World2.GiveWins:FindFirstChild("Stage10")
+                    and Workspace.Worlds.World2.GiveWins:FindFirstChild("Stage10") 
+                    and Workspace.Worlds.World2.GiveWins.Stage10:FindFirstChild("Part")
                 
                 if root and targetPart then
                     root.CFrame = targetPart.CFrame
                 end
             end)
         end
-        task.wait(0.05) -- Kecepatan teleport tinggi (dapat disesuaikan jika ingin diperlambat)
+        task.wait(0.05)
     end
 end)
+
 
 -- ======================================================================
 -- LOADED
