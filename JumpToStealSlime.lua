@@ -273,6 +273,16 @@ TabCatalog:Select()
 -- ======================================================================
 local autoFarmMoonBlockActive = false
 local farmSavedPosition = nil
+local autoFarmGalaxyBlockActive = false
+local galaxySavedPosition = nil
+local autoFarmBeachBlockActive = false
+local beachSavedPosition = nil
+local autoCollectCashActive = false
+local autoUpgradeSlimeActive = false
+local autoUpgradeJumpActive = false
+local autoUpgradeCarryActive = false
+local autoRebirthActive = false
+local autoSellAllActive = false
 
 local infJumpActive       = false
 local infStaminaActive    = false
@@ -410,6 +420,120 @@ MainAutoFram:Toggle({
                 farmSavedPosition = root.CFrame
             end
         end
+    end
+})
+
+-- Tambahkan ke dalam Section/Tab Main Features UI Anda
+MainAutoFram:Toggle({
+    Title = "Auto Farm Galaxy Lucky Block",
+    Desc = "TP ke Galaxy Lucky Block, ambil otomatis, lalu kembali",
+    Icon = "sparkles", -- Bisa diganti "zap" atau "target"
+    Value = false,
+    Callback = function(state)
+        autoFarmGalaxyBlockActive = state
+        if state then
+            local root = GetRoot() -- Sesuaikan dengan fungsi get root character script Anda
+            if root then
+                galaxySavedPosition = root.CFrame
+            end
+        end
+    end
+})
+
+MainAutoFram:Toggle({
+    Title = "Auto Farm Beach Lucky Block",
+    Desc = "TP ke Beach Lucky Block, ambil otomatis, lalu kembali",
+    Icon = "sparkles", -- Bisa disesuaikan dengan ikon pilihan Anda
+    Value = false,
+    Callback = function(state)
+        autoFarmBeachBlockActive = state
+        if state then
+            local root = GetRoot() -- Menggunakan fungsi GetRoot dari script utama Anda
+            if root then
+                beachSavedPosition = root.CFrame
+            end
+        end
+    end
+})
+
+local MainAutoCollectMoney = TabMain:Section({ Title = "Auto Collect Money", Icon = "coins", Opened = true })
+
+-- Toggle untuk Auto Collect Cash (1 sampai 50)
+MainAutoCollectMoney:Toggle({
+    Title = "Auto Collect Cash",
+    Desc = "Otomatis collect earnings",
+    Icon = "wallet",
+    Value = false,
+    Callback = function(state)
+        autoCollectCashActive = state
+    end
+})
+
+-- Membuat Section Baru untuk Upgrade
+local UpgradeSection = TabMain:Section({ 
+    Title = "Upgrade & Progression", 
+    Icon = "arrow-up-circle", -- Ikon panah ke atas yang cocok untuk upgrade
+    Opened = true 
+})
+
+-- Toggle untuk Auto Upgrade Slime (1 sampai 50)
+UpgradeSection:Toggle({
+    Title = "Auto Upgrade Slime",
+    Desc = "Otomatis upgrade slime",
+    Icon = "zap",
+    Value = false,
+    Callback = function(state)
+        autoUpgradeSlimeActive = state
+    end
+})
+
+UpgradeSection:Toggle({
+    Title = "Auto Upgrade Jump",
+    Desc = "otomatis Upgrade Jump",
+    Icon = "zap",
+    Value = false,
+    Callback = function(state)
+        autoUpgradeJumpActive = state
+    end
+})
+
+-- Toggle untuk Auto Upgrade Carry Limit
+UpgradeSection:Toggle({
+    Title = "Auto Upgrade Carry",
+    Desc = "Otomatis Upgrade Carry",
+    Icon = "package",
+    Value = false,
+    Callback = function(state)
+        autoUpgradeCarryActive = state
+    end
+})
+
+-- Section Baru / Tambahan untuk Rebirth & Sell
+local FarmAutomaticSection = TabMain:Section({ 
+    Title = "SellAll & Rebirth", 
+    Icon = "refresh-cw", -- Ikon putar/refresh yang cocok untuk rebirth & sell
+    Opened = true 
+})
+
+-- Toggle untuk Auto Rebirth
+FarmAutomaticSection:Toggle({
+    Title = "Auto Rebirth",
+    Desc = "Otomatis Rebirth",
+    Icon = "award",
+    Value = false,
+    Callback = function(state)
+        autoRebirthActive = state
+    end
+})
+
+-- Toggle untuk Auto Sell All Slimes
+FarmAutomaticSection:Toggle({
+    Title = "Auto Sell All",
+    Desc = "Otomatis Jual Semua",
+    Icon = "dollar-sign",
+    Value = false,
+    Callback = function(state)
+        autoSellAllActive = state
     end
 })
 
@@ -1421,6 +1545,251 @@ task.spawn(function()
             end)
         end
         task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if autoFarmGalaxyBlockActive then
+            pcall(function()
+                -- Menggunakan fungsi GetRoot bawaan script utama Anda, atau helper standar
+                local char = game:GetService("Players").LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if not root then return end
+                
+                if not galaxySavedPosition then
+                    galaxySavedPosition = root.CFrame
+                end
+                
+                -- Cari Galaxy Lucky Block di dalam workspace.Live.Slimes
+                local targetBlock = nil
+                local slimesFolder = workspace:FindFirstChild("Live") and workspace.Live:FindFirstChild("Slimes")
+                if slimesFolder then
+                    for _, obj in ipairs(slimesFolder:GetChildren()) do
+                        if obj.Name == "Galaxy Lucky Block" then
+                            targetBlock = obj
+                            break
+                        end
+                    end
+                end
+                
+                if targetBlock then
+                    local rootPart = targetBlock:FindFirstChild("RootPart")
+                    local prompt = rootPart and rootPart:FindFirstChild("StealPrompt")
+                    
+                    if rootPart then
+                        -- 1. TP tepat di atas/dekat Galaxy Lucky Block
+                        root.CFrame = rootPart.CFrame + Vector3.new(0, 2, 0)
+                        
+                        -- 2. Eksekusi instan ProximityPrompt
+                        if prompt and prompt:IsA("ProximityPrompt") then
+                            prompt.MaxActivationDistance = 9e9
+                            prompt.HoldDuration = 0
+                            
+                            for _ = 1, 3 do
+                                fireproximityprompt(prompt)
+                                task.wait(0.05)
+                            end
+                        end
+                        
+                        task.wait(0.2)
+                        
+                        -- 3. TP kembali ke posisi awal
+                        if galaxySavedPosition then
+                            root.CFrame = galaxySavedPosition
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if autoFarmBeachBlockActive then
+            pcall(function()
+                -- Mengambil root karakter menggunakan fungsi standar/bawaan script utama
+                local char = game:GetService("Players").LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if not root then return end
+                
+                if not beachSavedPosition then
+                    beachSavedPosition = root.CFrame
+                end
+                
+                -- Cari Beach Lucky Block di dalam workspace.Live.Slimes
+                local targetBlock = nil
+                local slimesFolder = workspace:FindFirstChild("Live") and workspace.Live:FindFirstChild("Slimes")
+                if slimesFolder then
+                    for _, obj in ipairs(slimesFolder:GetChildren()) do
+                        if obj.Name == "Beach Lucky Block" then
+                            targetBlock = obj
+                            break
+                        end
+                    end
+                end
+                
+                if targetBlock then
+                    local rootPart = targetBlock:FindFirstChild("RootPart")
+                    local prompt = rootPart and rootPart:FindFirstChild("StealPrompt")
+                    
+                    if rootPart then
+                        -- 1. TP tepat di atas/dekat Beach Lucky Block
+                        root.CFrame = rootPart.CFrame + Vector3.new(0, 2, 0)
+                        
+                        -- 2. Eksekusi instan ProximityPrompt
+                        if prompt and prompt:IsA("ProximityPrompt") then
+                            prompt.MaxActivationDistance = 9e9
+                            prompt.HoldDuration = 0
+                            
+                            for _ = 1, 3 do
+                                fireproximityprompt(prompt)
+                                task.wait(0.05)
+                            end
+                        end
+                        
+                        task.wait(0.2)
+                        
+                        -- 3. TP kembali ke posisi awal
+                        if beachSavedPosition then
+                            root.CFrame = beachSavedPosition
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.5)
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if autoCollectCashActive then
+            pcall(function()
+                local remote = game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Collect Earnings")
+                
+                -- Looping dari 1 sampai 100 untuk argumen
+                for i = 1, 100 do
+                    if not autoCollectCashActive then break end
+                    local args = {
+                        [1] = tostring(i)
+                    }
+                    remote:FireServer(unpack(args))
+                    task.wait(0.01) -- Jeda singkat agar aman dan tidak overload
+                end
+            end)
+        end
+        task.wait(0.1) -- Jeda sebelum mengulang dari awal lagi
+    end
+end)
+
+task.spawn(function()
+    while true do
+        if autoUpgradeSlimeActive then
+            pcall(function()
+                local remote = game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Upgrade Slime")
+                
+                -- Looping dari 1 sampai 50 untuk argumen upgrade
+                for i = 1, 100 do
+                    if not autoUpgradeSlimeActive then break end
+                    local args = {
+                        [1] = tostring(i)
+                    }
+                    remote:FireServer(unpack(args))
+                    task.wait(0.01) -- Jeda singkat agar tidak spam berlebih
+                end
+            end)
+        end
+        task.wait(0.1) -- Jeda sebelum mengulang loop dari angka 1 lagi
+    end
+end)
+
+-- Background Loop untuk Auto Upgrade Jump
+task.spawn(function()
+    while true do
+        if autoUpgradeJumpActive then
+            pcall(function()
+                local args = {
+                    [1] = 3
+                }
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Buy Speed Upgrade")
+                    :FireServer(unpack(args))
+            end)
+            task.wait(0.1) -- Jeda spam agar tidak berlebihan
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- Background Loop untuk Auto Upgrade Carry
+task.spawn(function()
+    while true do
+        if autoUpgradeCarryActive then
+            pcall(function()
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Upgrade Carry Limit")
+                    :FireServer()
+            end)
+            task.wait(0.1) -- Jeda spam agar tidak berlebihan
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- Background Loop untuk Auto Rebirth
+task.spawn(function()
+    while true do
+        if autoRebirthActive then
+            pcall(function()
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Rebirth")
+                    :FireServer()
+            end)
+            task.wait(0.2) -- Jeda spam agar tidak overload
+        else
+            task.wait(0.5)
+        end
+    end
+end)
+
+-- Background Loop untuk Auto Sell All Slimes
+task.spawn(function()
+    while true do
+        if autoSellAllActive then
+            pcall(function()
+                game:GetService("ReplicatedStorage")
+                    :WaitForChild("SharedModules")
+                    :WaitForChild("Network")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("Sell All Slimes")
+                    :FireServer()
+            end)
+            task.wait(0.2) -- Jeda spam agar tidak overload
+        else
+            task.wait(0.5)
+        end
     end
 end)
 
