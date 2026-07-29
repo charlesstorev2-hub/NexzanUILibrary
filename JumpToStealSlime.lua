@@ -319,7 +319,7 @@ end)
 -- ======================================================================
 local CatOfficial = TabCatalog:Section({ Title = "Nexzan Hub Official", Icon = "sparkles", Opened = true })
 
-CatOfficial:Paragraph({ Title = "Script Name",    Desc = "Nexzan Hub | Ultra Max Speed Auto Wins" })
+CatOfficial:Paragraph({ Title = "Script Name",    Desc = "Nexzan Hub" })
 CatOfficial:Paragraph({ Title = "Version Script", Desc = "v" .. HUB_VERSION })
 CatOfficial:Paragraph({ Title = "Developer",      Desc = HUB_DEV })
 
