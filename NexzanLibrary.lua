@@ -864,7 +864,7 @@ end
 -- ═══════════════════════════════════════════════════════════
 -- INITIALIZE
 -- ═══════════════════════════════════════════════════════════
-local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/latest/download/main.lua"))()
-NexzanLib.WindUI = WindUI
+local _version = "1.6.66"
+local WindUI = loadstring(game:HttpGet("https://github.com/Footagesus/WindUI/releases/download/" .. _version .. "/main.lua"))() 
 
 return NexzanLib
