@@ -109,7 +109,7 @@ end)
 -- MEMBUAT TABS
 -- ======================================================================
 local TabCatalog = Window:Tab({ Title = "Catalog", Icon = "book-open" Desc = "Informasi Script" })
-{
+
 pcall(function() Window:Divider() end)
 
 local TabMain = Window:Tab({ Title = "Main Features", Icon = "zap" })
