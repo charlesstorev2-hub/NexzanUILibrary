@@ -9,17 +9,6 @@ local UserInputService = game:GetService("UserInputService")
 local Stats = game:GetService("Stats")
 local Player = Players.LocalPlayer
 
--- ======================================================================
--- INFORMASI HUB
--- ======================================================================
-local HUB_NAME    = "Nexzan Hub"
-local HUB_VERSION = "7.0.0"
-local HUB_DEV     = "Nexzan Hub"
-local HUB_DISCORD = "https://discord.gg/syBYFrPts"
-local HUB_YOUTUBE = "https://www.youtube.com/@Nexzan_hub"
-local HUB_WEBSITE = "https://scriptvaultnexzanv2www.netlify.app/"
-local HUB_CREDITS = "Made by Nexzan"
-
 -- Executor Detect
 local ExecutorName = "Unknown"
 pcall(function()
@@ -261,50 +250,19 @@ local function getMyPlot()
 end
 
 -- ======================================================================
--- 1. CATALOG
+-- CATALOG
 -- ======================================================================
 local CatOfficial = TabCatalog:Section({ Title = "Nexzan Hub Official", Icon = "sparkles", Opened = true })
 
 CatOfficial:Paragraph({ 
     Title = "Features List", 
-    Desc = "[+] Auto Farm OG\n[+] Auto Collect Cash\n[+] Auto Upgrade Slime\n[+] Auto Upgrade Jump\n[+] Auto Upgrade Carry\n[+] Auto Sell All\n[+] Auto Rebirth" 
-})
-CatOfficial:Paragraph({ Title = "Script Name",    Desc = "Nexzan Hub" })
-CatOfficial:Paragraph({ Title = "Version Script", Desc = "v" .. HUB_VERSION })
-CatOfficial:Paragraph({ Title = "Developer",      Desc = HUB_DEV })
-
-TabCatalog:Divider()
-
-local CatSocial = TabCatalog:Section({ Title = "Social & Community", Icon = "globe", Opened = true })
-
-CatSocial:Paragraph({
-    Title = "Discord Server",
-    Desc  = HUB_DISCORD,
-    Buttons = {
-        { Title = "Copy", Icon = "copy", Callback = function() Copy(HUB_DISCORD, "Link Discord") end },
-    }
-})
-
-CatSocial:Paragraph({
-    Title = "YouTube",
-    Desc  = HUB_YOUTUBE,
-    Buttons = {
-        { Title = "Copy", Icon = "copy", Callback = function() Copy(HUB_YOUTUBE, "Link YouTube") end },
-    }
-})
-
-CatSocial:Paragraph({
-    Title = "Website",
-    Desc  = HUB_WEBSITE,
-    Buttons = {
-        { Title = "Copy", Icon = "copy", Callback = function() Copy(HUB_WEBSITE, "Link Website") end },
-    }
+    Desc = "[+] Auto Farm OG And Godly\n[+] Auto Collect Cash\n[+] Auto Upgrade Brainrots\n[+] Auto Upgrade Speed And Power\n[+] Auto Buy Tools\n[+] Auto Rebirth" 
 })
 
 TabCatalog:Divider()
 
 local CatCredits = TabCatalog:Section({ Title = "Credits", Icon = "heart", Opened = true })
-CatCredits:Paragraph({ Title = "Credits", Desc = HUB_CREDITS })
+CatCredits:Paragraph({ Title = "Credits", Desc = "Nexzan Hub | Official" })
 
 -- ======================================================================
 -- 1. TAB MAIN FEATURES
