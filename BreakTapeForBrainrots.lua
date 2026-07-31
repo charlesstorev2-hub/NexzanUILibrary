@@ -108,10 +108,6 @@ end)
 -- ======================================================================
 -- MEMBUAT TABS
 -- ======================================================================
-local TabCatalog = Window:Tab({ Title = "Catalog", Icon = "book-open" Desc = "Informasi Script" })
-
-pcall(function() Window:Divider() end)
-
 local TabMain = Window:Tab({ Title = "Main Features", Icon = "zap" })
 
 pcall(function() Window:Divider() end)
@@ -248,21 +244,6 @@ local function getMyPlot()
     end
     return nil
 end
-
--- ======================================================================
--- CATALOG
--- ======================================================================
-local CatOfficial = TabCatalog:Section({ Title = "Nexzan Hub Official", Icon = "sparkles", Opened = true })
-
-CatOfficial:Paragraph({ 
-    Title = "Features List", 
-    Desc = "[+] Auto Farm OG And Godly\n[+] Auto Collect Cash\n[+] Auto Upgrade Brainrots\n[+] Auto Upgrade Speed And Power\n[+] Auto Buy Tools\n[+] Auto Rebirth" 
-})
-
-TabCatalog:Divider()
-
-local CatCredits = TabCatalog:Section({ Title = "Credits", Icon = "heart", Opened = true })
-CatCredits:Paragraph({ Title = "Credits", Desc = "Nexzan Hub | Official" })
 
 -- ======================================================================
 -- 1. TAB MAIN FEATURES
